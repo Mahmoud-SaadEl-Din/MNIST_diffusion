@@ -54,7 +54,7 @@ def train_one_epoch(net, dataloader, noise_scheduler, opt, loss_fn, device, writ
         x = x.to(device) * 2 - 1
         y = y.to(device)
         noise = torch.randn_like(x)
-        timesteps = torch.randint(0, noise_scheduler.num_train_timesteps, (x.shape[0],)).long().to(device)
+        timesteps = torch.randint(0, noise_scheduler.num_train_timesteps-1 , (x.shape[0],)).long().to(device)
         noisy_x = noise_scheduler.add_noise(x, noise, timesteps)
 
         pred = net(noisy_x, timesteps, y)
@@ -74,10 +74,10 @@ def train_one_epoch(net, dataloader, noise_scheduler, opt, loss_fn, device, writ
 def main():
     # Load configuration
     config = load_config()
-    
+    exp_id = config["logging"]["experimentID"]
     # Save the config file used for training
-    os.makedirs(config["logging"]["config_save_path"],exist_ok=True)
-    save_config(config, join(config["logging"]["config_save_path"],"config.yaml"))
+    os.makedirs(join(config["logging"]["artifact_save_path"],exp_id),exist_ok=True)
+    save_config(config, join(config["logging"]["artifact_save_path"],exp_id,"config.yaml"))
     
     # Set device
     device = get_device(config)
@@ -100,7 +100,7 @@ def main():
 
     # Initialize TensorBoard writer
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    log_dir = f"{config['logging']['tensorboard_dir']}/{timestamp}" 
+    log_dir = f"{config['logging']['tensorboard_dir']}/{exp_id}" 
     writer = SummaryWriter(log_dir=log_dir)
 
     # Training loop
@@ -114,7 +114,8 @@ def main():
         writer.add_scalar("Loss/Epoch", avg_loss, epoch)
 
     # Save loss curve and model
-    torch.save(net.state_dict(), join(config["logging"]["model_save_path"], "conditional_mnist.pth"))
+    
+    torch.save(net.state_dict(), join(config["logging"]["artifact_save_path"],exp_id, "conditional_mnist.pth"))
     writer.close()
 
 
