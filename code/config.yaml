@@ -1,6 +1,6 @@
 model:
   num_classes: 10
-  class_emb_size: 8 
+  class_emb_size: 4 
   sample_size: 28 # the target image resolution
   in_channels: 1 # Additional input channels for class cond.
   out_channels: 1 # the number of output channels
@@ -11,9 +11,9 @@ model:
     - "AttnDownBlock2D" # a ResNet downsampling block with spatial self-attention
     - "AttnDownBlock2D"
   up_block_types:
-    - "AttnUpBlock2D"
+    - "UpBlock2D"
     - "AttnUpBlock2D" # a ResNet upsampling block with spatial self-attention
-    - "UpBlock2D" # a regular ResNet upsampling block
+    - "AttnUpBlock2D" # a regular ResNet upsampling block
 
 dataset:
   root: "mnist/"
@@ -30,10 +30,10 @@ device:
   use_cuda: true
 
 scheduler:
-  num_train_timesteps: 1000
+  num_train_timesteps: 50
   beta_schedule: "squaredcos_cap_v2"
 
 logging:
   tensorboard_dir: "../runs"
-  experimentID: "exp-1"
+  experimentID: "exp-23"
   artifact_save_path: "../mnist_diffusion_experiments"

@@ -1,0 +1,37 @@
+dataset:
+  batch_size: 128
+  download: true
+  root: mnist/
+  shuffle: true
+device:
+  use_cuda: true
+  use_mps: true
+logging:
+  artifact_save_path: ../mnist_diffusion_experiments
+  experimentID: exp-9
+  tensorboard_dir: ../runs
+model:
+  block_out_channels:
+  - 32
+  - 64
+  - 64
+  class_emb_size: 4
+  down_block_types:
+  - DownBlock2D
+  - AttnDownBlock2D
+  - AttnDownBlock2D
+  in_channels: 1
+  layers_per_block: 3
+  num_classes: 10
+  out_channels: 1
+  sample_size: 28
+  up_block_types:
+  - AttnUpBlock2D
+  - AttnUpBlock2D
+  - UpBlock2D
+scheduler:
+  beta_schedule: squaredcos_cap_v2
+  num_train_timesteps: 1000
+training:
+  lr: 1e-2
+  n_epochs: 10
